@@ -1,42 +1,65 @@
--- Criação do banco de dados
-CREATE DATABASE escola;
+-- Criação do banco de dados e das tabelas
+CREATE DATABASE db_farmacia_bem_estar;
+USE db_farmacia_bem_estar;
 
--- Seleção do banco de dados
-USE escola;
-
--- Criação da tabela de estudantes
-CREATE TABLE tb_estudantes (
+-- Tabela tb_categorias
+CREATE TABLE tb_categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    idade INT,
-    curso VARCHAR(100),
-    nota FLOAT,
-    email VARCHAR(255)
+    nome VARCHAR(50) NOT NULL,
+    descricao TEXT
 );
 
--- Inserção de dados na tabela de estudantes
-INSERT INTO tb_estudantes (nome, idade, curso, nota, email)
-VALUES
-    ('Maria Silva', 20, 'Engenharia Civil', 8.5, 'maria.silva@example.com'),
-    ('João Oliveira', 22, 'Administração', 7.2, 'joao.oliveira@example.com'),
-    ('Pedro Santos', 19, 'Medicina', 9.0, 'pedro.santos@example.com'),
-    ('Ana Souza', 21, 'Direito', 6.8, 'ana.souza@example.com'),
-    ('Luiza Costa', 20, 'Psicologia', 8.9, 'luiza.costa@example.com'),
-    ('Marcos Lima', 23, 'Economia', 7.5, 'marcos.lima@example.com'),
-    ('Carla Fernandes', 18, 'Ciências da Computação', 8.2, 'carla.fernandes@example.com'),
-    ('Lucas Pereira', 19, 'Arquitetura', 6.5, 'lucas.pereira@example.com');
+-- Tabela tb_produtos
+CREATE TABLE tb_produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    preco DECIMAL(10, 2) NOT NULL,
+    id_categoria INT,
+    FOREIGN KEY (id_categoria) REFERENCES tb_categorias(id)
+);
 
--- SELECT para estudantes com nota maior que 7.0
+-- Inserir registros na tabela tb_categorias
+INSERT INTO tb_categorias (nome, descricao) VALUES
+('Medicamentos', 'Produtos farmacêuticos para tratamento de doenças'),
+('Cosméticos', 'Produtos de beleza e cuidados com a pele e cabelo'),
+('Higiene Pessoal', 'Produtos para higiene diária'),
+('Dietéticos', 'Produtos dietéticos e suplementos alimentares'),
+('Maternidade', 'Produtos para gestantes e recém-nascidos');
+
+-- Inserir registros na tabela tb_produtos
+INSERT INTO tb_produtos (nome, descricao, preco, id_categoria) VALUES
+('Paracetamol 500mg', 'Analgésico e antitérmico', 12.50, 1),
+('Shampoo Anticaspa', 'Shampoo para controle da caspa', 19.90, 2),
+('Protetor Solar FPS 50', 'Protetor solar para peles sensíveis', 45.00, 2),
+('Escova Dental Infantil', 'Escova dental infantil com desenhos divertidos', 5.99, 3),
+('Suplemento de Vitamina C', 'Suplemento vitamínico para reforço imunológico', 30.00, 4),
+('Creme Hidratante Facial', 'Hidratante facial para peles secas', 55.00, 2),
+('Álcool em Gel 70%', 'Antisséptico para as mãos', 8.50, 3),
+('Pomada para Assaduras', 'Pomada para prevenção e tratamento de assaduras', 15.75, 5);
+
+-- Consulta 1: Produtos cujo valor seja maior do que R$ 50,00
 SELECT *
-FROM tb_estudantes
-WHERE nota > 7.0;
+FROM tb_produtos
+WHERE preco > 50.00;
 
--- SELECT para estudantes com nota menor ou igual a 7.0
+-- Consulta 2: Produtos cujo valor esteja no intervalo entre R$ 5,00 e R$ 60,00
 SELECT *
-FROM tb_estudantes
-WHERE nota <= 7.0;
+FROM tb_produtos
+WHERE preco BETWEEN 5.00 AND 60.00;
 
--- Atualização de um registro na tabela de estudantes
-UPDATE tb_estudantes
-SET nota = 8.0
-WHERE id = 4;
+-- Consulta 3: Produtos que possuam a letra C no nome
+SELECT *
+FROM tb_produtos
+WHERE nome LIKE '%C%';
+
+-- Consulta 4: INNER JOIN entre tb_produtos e tb_categorias
+SELECT p.*, c.nome AS categoria
+FROM tb_produtos p
+INNER JOIN tb_categorias c ON p.id_categoria = c.id;
+
+-- Consulta 5: INNER JOIN com filtro por categoria específica 
+SELECT p.*, c.nome AS categoria
+FROM tb_produtos p
+INNER JOIN tb_categorias c ON p.id_categoria = c.id
+WHERE c.nome = 'Cosméticos';
